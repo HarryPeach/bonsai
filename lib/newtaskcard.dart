@@ -35,6 +35,7 @@ class _NewTaskCardState extends State<NewTaskCard> {
                 icon: Icon(
                   Icons.check,
                 ),
+                iconSize: 32.0,
                 onPressed: () {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(

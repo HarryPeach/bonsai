@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:todo/newtask.dart';
+import 'package:todo/newtaskcard.dart';
+import 'package:todo/task.dart';
 
 void main() {
   runApp(MyApp());
@@ -94,6 +95,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
+            Task(),
+            Task(),
+            Task(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -140,6 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  /// Show the "add new task" bottom sheet
   void _showAddTaskSheet() {
     showModalBottomSheet(
       isScrollControlled: true,
