@@ -1,12 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:todo/model/task_model.dart';
+import 'package:todo/model/task_provider.dart';
 import 'package:todo/newtaskcard.dart';
 import 'package:todo/task.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final TaskProvider tp = TaskProvider();
+  await tp.open("x.db");
+
+  var task = TaskModel(
+    id: 0,
+    name: "Sample Task",
+    desc: "A description for said task",
+    status: "ACTIVE",
+    due: "21/12/2021",
+    important: true,
+  );
+
+  await tp.insertTask(task);
+
+  print(await tp.tasks());
+
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
