@@ -3,18 +3,25 @@ import 'package:path/path.dart';
 import 'package:todo/model/task_model.dart';
 
 class TaskProvider {
-  // static TaskProvider? _instance;
-  late Database db;
+  static TaskProvider? _instance;
+  static Database? _db;
 
-  // TaskProvider._internal() {
-  //   _instance = this;
-  // }
+  TaskProvider._internal() {
+    _instance = this;
+  }
 
-  // factory TaskProvider() => _instance ?? TaskProvider._internal();
+  factory TaskProvider() => _instance ?? TaskProvider._internal();
 
-  Future open(String path) async {
-    db = await openDatabase(
-      join(await getDatabasesPath(), 'task_db_001.db'),
+  Future<Database> get db async {
+    if (_db != null) return _db!;
+
+    _db = await initdb("dbs/");
+    return _db!;
+  }
+
+  Future initdb(String path) async {
+    _db = await openDatabase(
+      join(await getDatabasesPath(), 'x.db'),
       onCreate: (db, version) {
         return db.execute('''CREATE TABLE tasks(
 					id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,7 +37,7 @@ class TaskProvider {
   }
 
   Future<void> insertTask(TaskModel task) async {
-    await db.insert(
+    await _db!.insert(
       'tasks',
       task.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -38,7 +45,7 @@ class TaskProvider {
   }
 
   Future<List<TaskModel>> tasks() async {
-    final List<Map<String, dynamic>> maps = await db.query('tasks');
+    final List<Map<String, dynamic>> maps = await _db!.query('tasks');
 
     return List.generate(maps.length, (i) {
       return TaskModel(

@@ -8,8 +8,9 @@ import 'package:todo/task.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final TaskProvider tp = TaskProvider();
-  await tp.open("x.db");
+  var tp = TaskProvider();
+  // TODO: Find a way to put this in the constructor
+  await tp.initdb(".");
 
   var task = TaskModel(
     id: 0,
@@ -23,6 +24,9 @@ void main() async {
   await tp.insertTask(task);
 
   print(await tp.tasks());
+
+  var xp = TaskProvider();
+  print(await xp.tasks());
 
   runApp(MyApp());
 }

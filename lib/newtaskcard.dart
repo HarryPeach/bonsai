@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'model/task_model.dart';
+import 'model/task_provider.dart';
+
 class NewTaskCard extends StatefulWidget {
   NewTaskCard({Key? key}) : super(key: key);
 
@@ -13,6 +16,20 @@ class _NewTaskCardState extends State<NewTaskCard> {
   final TextEditingController _taskDescCtl = TextEditingController();
   final TextEditingController _dateCtl = TextEditingController();
   bool _important = false;
+
+  // TODO: Async this
+  void _addNewTask() {
+    var tp = TaskProvider();
+    var task = TaskModel(
+      id: DateTime.now().microsecondsSinceEpoch,
+      name: _taskNameCtl.text,
+      desc: _taskDescCtl.text,
+      status: "ACTIVE",
+      due: _dateCtl.text,
+      important: _important,
+    );
+    tp.insertTask(task);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,20 +54,8 @@ class _NewTaskCardState extends State<NewTaskCard> {
                 ),
                 iconSize: 32.0,
                 onPressed: () {
+                  _addNewTask();
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        _taskNameCtl.text +
-                            " - " +
-                            _taskDescCtl.text +
-                            " - " +
-                            _dateCtl.text +
-                            " - " +
-                            _important.toString(),
-                      ),
-                    ),
-                  );
                 },
               ),
             ],
