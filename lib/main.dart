@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo/newtask.dart';
 
 void main() {
   runApp(MyApp());
@@ -64,17 +65,74 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: const Icon(Icons.add),
             iconSize: 36.0,
             color: Colors.black87,
-            onPressed: () => {},
+            onPressed: _showAddTaskSheet,
           ),
         ],
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            TextButton(
-              onPressed: _showAddTaskSheet,
-              child: Text("Add task"),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "complete today",
+                  style: TextStyle(
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  "+2 more",
+                  style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.black38),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "complete soon",
+                  style: TextStyle(
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  "+2 more",
+                  style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.black38),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "completed today",
+                  style: TextStyle(
+                      fontSize: 24.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black38),
+                ),
+                Text(
+                  "+2 more",
+                  style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.black38),
+                ),
+              ],
             ),
           ],
         ),
@@ -84,13 +142,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _showAddTaskSheet() {
     showModalBottomSheet(
+      isScrollControlled: true,
       context: context,
       builder: (context) {
         return Container(
           color: Color(0xFF737373),
-          height: 260,
+          height: 420,
           child: Container(
-            child: _buildBottomNavigationMenu(),
+            child: NewTaskCard(),
             decoration: BoxDecoration(
               color: Theme.of(context).canvasColor,
               borderRadius: BorderRadius.only(
@@ -101,25 +160,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         );
       },
-    );
-  }
-
-  Column _buildBottomNavigationMenu() {
-    return Column(
-      children: <Widget>[
-        ListTile(
-          leading: Icon(Icons.ac_unit),
-          title: Text('Flutter'),
-        ),
-        ListTile(
-          leading: Icon(Icons.accessibility_new),
-          title: Text('Android'),
-        ),
-        ListTile(
-          leading: Icon(Icons.assessment),
-          title: Text('Kotlin'),
-        ),
-      ],
     );
   }
 }
