@@ -1,9 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:circular_check_box/circular_check_box.dart';
+import 'package:todo/model/task_model.dart';
 
 class Task extends StatefulWidget {
-  Task({Key? key}) : super(key: key);
+  final TaskModel tm;
+  final VoidCallback onStateChange;
+
+  Task({Key? key, required this.tm, required this.onStateChange})
+      : super(key: key);
 
   @override
   _TaskState createState() => _TaskState();
@@ -19,10 +24,13 @@ class _TaskState extends State<Task> {
         CircularCheckBox(
           value: _selected,
           activeColor: Colors.black87,
-          onChanged: (val) => setState(() => _selected = val!),
+          onChanged: (val) {
+            setState(() => _selected = val!);
+            widget.onStateChange();
+          },
         ),
         Text(
-          "I am an example task",
+          widget.tm.name,
           style: TextStyle(
             fontSize: 18,
           ),

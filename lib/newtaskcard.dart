@@ -5,7 +5,9 @@ import 'model/task_model.dart';
 import 'model/task_provider.dart';
 
 class NewTaskCard extends StatefulWidget {
-  NewTaskCard({Key? key}) : super(key: key);
+  final VoidCallback onNewTask;
+
+  NewTaskCard({Key? key, required this.onNewTask}) : super(key: key);
 
   @override
   _NewTaskCardState createState() => _NewTaskCardState();
@@ -29,6 +31,7 @@ class _NewTaskCardState extends State<NewTaskCard> {
       important: _important,
     );
     tp.insertTask(task);
+    widget.onNewTask();
   }
 
   @override
@@ -60,6 +63,7 @@ class _NewTaskCardState extends State<NewTaskCard> {
               ),
             ],
           ),
+          // TODO: Validate this
           Form(
             child: Wrap(
               runSpacing: 10,

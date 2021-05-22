@@ -25,9 +25,6 @@ void main() async {
 
   print(await tp.tasks());
 
-  var xp = TaskProvider();
-  print(await xp.tasks());
-
   runApp(MyApp());
 }
 
@@ -56,8 +53,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int count = 0;
+  List<TaskModel>? taskList;
+
   @override
   Widget build(BuildContext context) {
+    if (taskList == null) {
+      taskList = <TaskModel>[];
+      updateListViews();
+    }
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80.0,
@@ -122,9 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
-            Task(),
-            Task(),
-            Task(),
+            getBacklogTaskListView(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -171,6 +173,29 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  ListView getBacklogTaskListView() {
+    return ListView.builder(
+      itemCount: count,
+      shrinkWrap: true,
+      itemBuilder: (BuildContext context, int position) {
+        return Task(
+          tm: this.taskList![position],
+          onStateChange: () => updateListViews(),
+        );
+      },
+    );
+  }
+
+  void updateListViews() {
+    var tp = TaskProvider();
+    tp.tasks().then((tasks) {
+      setState(() {
+        this.taskList = tasks;
+        this.count = tasks.length;
+      });
+    });
+  }
+
   /// Show the "add new task" bottom sheet
   void _showAddTaskSheet() {
     showModalBottomSheet(
@@ -181,7 +206,9 @@ class _MyHomePageState extends State<MyHomePage> {
           color: Color(0xFF737373),
           height: 420,
           child: Container(
-            child: NewTaskCard(),
+            child: NewTaskCard(
+              onNewTask: () => updateListViews(),
+            ),
             decoration: BoxDecoration(
               color: Theme.of(context).canvasColor,
               borderRadius: BorderRadius.only(
