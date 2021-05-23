@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:todo/components/task.dart';
-import 'package:todo/model/task_model.dart';
+import 'package:bonsai/components/task.dart';
+import 'package:bonsai/model/task_model.dart';
 
 class TaskList extends StatelessWidget {
   final String title;

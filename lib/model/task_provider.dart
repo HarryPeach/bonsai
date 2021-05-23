@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:todo/model/task_model.dart';
+import 'package:bonsai/model/task_model.dart';
 
 class TaskProvider {
   static TaskProvider? _instance;

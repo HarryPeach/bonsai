@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:todo/model/task_model.dart';
-import 'package:todo/model/task_provider.dart';
-import 'package:todo/components/new_task_card.dart';
+import 'package:bonsai/model/task_model.dart';
+import 'package:bonsai/model/task_provider.dart';
+import 'package:bonsai/components/new_task_card.dart';
 import 'package:dart_date/dart_date.dart';
-import 'package:todo/components/task_list.dart';
+import 'package:bonsai/components/task_list.dart';
 import 'package:table_calendar/table_calendar.dart';
+
+import 'components/view_task_card.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,9 +28,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'todo',
+      title: 'bonsai',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: Colors.yellow[800],
+        accentColor: Colors.black,
+        backgroundColor: Colors.white,
       ),
       home: MyHomePage(),
     );
@@ -54,6 +59,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.white, //or set color with: Color(0xFF0000FF)
+    ));
+
     if (todaysTasks == null ||
         soonTasks == null ||
         completedTodayTasks == null) {
@@ -64,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 80.0,
+        toolbarHeight: 60.0,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         titleSpacing: 0.0,

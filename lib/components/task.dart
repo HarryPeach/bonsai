@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:todo/model/task_model.dart';
-import 'package:todo/model/task_provider.dart';
+import 'package:bonsai/components/view_task_card.dart';
+import 'package:bonsai/model/task_model.dart';
+import 'package:bonsai/model/task_provider.dart';
 import 'package:vibration/vibration.dart';
 
 class Task extends StatefulWidget {
@@ -44,13 +45,43 @@ class _TaskState extends State<Task> {
             _vibrate();
           },
         ),
-        Text(
-          widget.tm.name,
-          style: TextStyle(
-            fontSize: 18,
+        InkWell(
+          onLongPress: () {
+            _showViewTaskSheet(widget.tm);
+          },
+          child: Text(
+            widget.tm.name,
+            style: TextStyle(
+              fontSize: 18,
+            ),
           ),
         ),
       ],
+    );
+  }
+
+  void _showViewTaskSheet(TaskModel task) {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return Container(
+          color: Color(0xFF737373),
+          height: 420,
+          child: Container(
+            child: ViewTaskCard(
+              task: task,
+            ),
+            decoration: BoxDecoration(
+              color: Theme.of(context).canvasColor,
+              borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(10),
+                topRight: const Radius.circular(10),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
