@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:todo/model/task_model.dart';
 import 'package:todo/model/task_provider.dart';
-import 'package:todo/newtaskcard.dart';
-import 'package:todo/task.dart';
+import 'package:todo/components/newtaskcard.dart';
+import 'package:todo/components/task.dart';
 import 'package:dart_date/dart_date.dart';
+import 'package:todo/components/task_list.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             Text(
-              getTitle(),
+              "bonsai",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
@@ -112,69 +112,24 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "complete " + getTitle(),
-                  style: TextStyle(
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  "+2 more",
-                  style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
-                      color: Colors.black38),
-                ),
-              ],
+            TaskList(
+              title: "complete " + getTitle(),
+              tasks: todaysTasks!,
+              taskCount: todaysTasksCount,
+              onTaskChange: updateListViews,
             ),
-            getCompleteTodayTaskListView(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "backlog",
-                  style: TextStyle(
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  "+2 more",
-                  style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
-                      color: Colors.black38),
-                ),
-              ],
+            TaskList(
+              title: "backlog",
+              tasks: soonTasks!,
+              taskCount: soonTasksCount,
+              onTaskChange: updateListViews,
             ),
-            getBacklogTaskListView(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "completed " + getTitle(),
-                  style: TextStyle(
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black38),
-                ),
-                Text(
-                  "+2 more",
-                  style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
-                      color: Colors.black38),
-                ),
-              ],
+            TaskList(
+              title: "completed " + getTitle(),
+              tasks: completedTodayTasks!,
+              taskCount: completedTasksCount,
+              onTaskChange: updateListViews,
             ),
-            getCompletedTodayTaskListView(),
           ],
         ),
       ),
@@ -191,45 +146,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     return dateFormatter.format(currentDate);
-  }
-
-  ListView getCompleteTodayTaskListView() {
-    return ListView.builder(
-      itemCount: todaysTasksCount,
-      shrinkWrap: true,
-      itemBuilder: (BuildContext context, int position) {
-        return Task(
-          tm: this.todaysTasks![position],
-          onStateChange: () => updateListViews(),
-        );
-      },
-    );
-  }
-
-  ListView getBacklogTaskListView() {
-    return ListView.builder(
-      itemCount: soonTasksCount,
-      shrinkWrap: true,
-      itemBuilder: (BuildContext context, int position) {
-        return Task(
-          tm: this.soonTasks![position],
-          onStateChange: () => updateListViews(),
-        );
-      },
-    );
-  }
-
-  ListView getCompletedTodayTaskListView() {
-    return ListView.builder(
-      itemCount: completedTasksCount,
-      shrinkWrap: true,
-      itemBuilder: (BuildContext context, int position) {
-        return Task(
-          tm: this.completedTodayTasks![position],
-          onStateChange: () => updateListViews(),
-        );
-      },
-    );
   }
 
   void updateListViews() {
