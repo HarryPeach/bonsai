@@ -199,7 +199,13 @@ class _MyHomePageState extends State<MyHomePage> {
       return "yesterday";
     }
 
-    return dateFormatter.format(currentDate);
+    int daysLater = currentDate.differenceInDays(DateTime.now()) + 1;
+
+    if (daysLater > 7) {
+      return "on " + dateFormatter.format(currentDate);
+    }
+
+    return "in " + daysLater.toString() + " days";
   }
 
   void updateListViews() {
