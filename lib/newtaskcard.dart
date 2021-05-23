@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'model/task_model.dart';
 import 'model/task_provider.dart';
@@ -14,6 +15,7 @@ class NewTaskCard extends StatefulWidget {
 }
 
 class _NewTaskCardState extends State<NewTaskCard> {
+  DateFormat dateFormmater = DateFormat("y/M/d");
   final TextEditingController _taskNameCtl = TextEditingController();
   final TextEditingController _taskDescCtl = TextEditingController();
   final TextEditingController _dateCtl = TextEditingController();
@@ -93,7 +95,7 @@ class _NewTaskCardState extends State<NewTaskCard> {
                     if (date == null) {
                       _dateCtl.text = "";
                     } else {
-                      _dateCtl.text = "${date.year}/${date.month}/${date.day}";
+                      _dateCtl.text = dateFormmater.format(date);
                     }
                   },
                 ),

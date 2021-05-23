@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:todo/model/task_model.dart';
 import 'package:todo/model/task_provider.dart';
 import 'package:todo/newtaskcard.dart';
 import 'package:todo/task.dart';
+import 'package:dart_date/dart_date.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,21 +29,22 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'today'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, this.title}) : super(key: key);
-
-  final String? title;
+  MyHomePage({Key? key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  DateTime currentDate = DateTime.now();
+  DateFormat dateFormatter = DateFormat("y/M/d");
+
   int todaysTasksCount = 0;
   List<TaskModel>? todaysTasks;
   int soonTasksCount = 0;
@@ -71,10 +74,13 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.chevron_left),
               iconSize: 36.0,
               color: Colors.black87,
-              onPressed: () => {},
+              onPressed: () {
+                setState(() => {currentDate = currentDate.subDays(1)});
+                updateListViews();
+              },
             ),
             Text(
-              widget.title!,
+              getTitle(),
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
@@ -85,7 +91,10 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.chevron_right),
               iconSize: 36.0,
               color: Colors.black87,
-              onPressed: () => {},
+              onPressed: () {
+                setState(() => {currentDate = currentDate.addDays(1)});
+                updateListViews();
+              },
             ),
           ],
         ),
@@ -107,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "complete today",
+                  "complete " + getTitle(),
                   style: TextStyle(
                     fontSize: 24.0,
                     fontWeight: FontWeight.bold,
@@ -128,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "complete soon",
+                  "backlog",
                   style: TextStyle(
                     fontSize: 24.0,
                     fontWeight: FontWeight.bold,
@@ -149,7 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "completed today",
+                  "completed " + getTitle(),
                   style: TextStyle(
                       fontSize: 24.0,
                       fontWeight: FontWeight.bold,
@@ -170,6 +179,18 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+
+  String getTitle() {
+    if (currentDate.isToday) {
+      return "today";
+    } else if (currentDate.isTomorrow) {
+      return "tomorrow";
+    } else if (currentDate.isYesterday) {
+      return "yesterday";
+    }
+
+    return dateFormatter.format(currentDate);
   }
 
   ListView getCompleteTodayTaskListView() {
@@ -217,8 +238,7 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         List<TaskModel> filteredTodaysTasks = tasks
             .where((task) =>
-                task.due ==
-                    "${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}" &&
+                task.due == "${dateFormatter.format(currentDate)}" &&
                 task.status != "DONE")
             .toList();
         this.todaysTasks = filteredTodaysTasks;
@@ -226,15 +246,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
         List<TaskModel> filteredSoonTasks = tasks
             .where((task) =>
-                task.due !=
-                    "${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}" &&
+                task.due != "${dateFormatter.format(currentDate)}" &&
                 task.status == "ACTIVE")
             .toList();
         this.soonTasks = filteredSoonTasks;
         this.soonTasksCount = filteredSoonTasks.length;
 
-        List<TaskModel> filteredCompletedTodayTasks =
-            tasks.where((task) => task.status == "DONE").toList();
+        List<TaskModel> filteredCompletedTodayTasks = tasks
+            .where((task) =>
+                task.completedOn == "${dateFormatter.format(currentDate)}" &&
+                task.status == "DONE")
+            .toList();
         this.completedTodayTasks = filteredCompletedTodayTasks;
         this.completedTasksCount = filteredCompletedTodayTasks.length;
       });

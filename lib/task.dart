@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:circular_check_box/circular_check_box.dart';
 import 'package:todo/model/task_model.dart';
 import 'package:todo/model/task_provider.dart';
 import 'package:vibration/vibration.dart';
@@ -32,10 +31,10 @@ class _TaskState extends State<Task> {
 
     return Row(
       children: [
-        CircularCheckBox(
+        Checkbox(
           value: _selected,
           activeColor: Colors.black87,
-          onChanged: (val) {
+          onChanged: (val) async {
             if (widget.tm.status == "ACTIVE") {
               TaskProvider().completeTask(widget.tm.id);
             } else {

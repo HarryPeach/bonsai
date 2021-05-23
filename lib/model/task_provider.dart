@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:todo/model/task_model.dart';
@@ -5,6 +6,7 @@ import 'package:todo/model/task_model.dart';
 class TaskProvider {
   static TaskProvider? _instance;
   static Database? _db;
+  DateFormat dateFormatter = DateFormat("y/M/d");
 
   TaskProvider._internal() {
     _instance = this;
@@ -50,10 +52,7 @@ class TaskProvider {
     UPDATE tasks
     SET status = 'DONE', completedOn = ?
     WHERE id = ?
-    ''', [
-      "${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}",
-      id
-    ]);
+    ''', ["${dateFormatter.format(DateTime.now())}", id]);
   }
 
   Future<void> insertTask(TaskModel task) async {
