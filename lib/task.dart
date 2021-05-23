@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:circular_check_box/circular_check_box.dart';
 import 'package:todo/model/task_model.dart';
+import 'package:todo/model/task_provider.dart';
+import 'package:vibration/vibration.dart';
 
 class Task extends StatefulWidget {
   final TaskModel tm;
@@ -17,16 +19,30 @@ class Task extends StatefulWidget {
 class _TaskState extends State<Task> {
   bool _selected = false;
 
+  void _vibrate() async {
+    var hasVibrate = await Vibration.hasVibrator();
+    if (hasVibrate != null && hasVibrate) {
+      Vibration.vibrate(duration: 50);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    _selected = widget.tm.status == "DONE";
+
     return Row(
       children: [
         CircularCheckBox(
           value: _selected,
           activeColor: Colors.black87,
           onChanged: (val) {
-            setState(() => _selected = val!);
+            if (widget.tm.status == "ACTIVE") {
+              TaskProvider().completeTask(widget.tm.id);
+            } else {
+              TaskProvider().unCompleteTask(widget.tm.id);
+            }
             widget.onStateChange();
+            _vibrate();
           },
         ),
         Text(

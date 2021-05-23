@@ -27,6 +27,7 @@ class _NewTaskCardState extends State<NewTaskCard> {
       name: _taskNameCtl.text,
       desc: _taskDescCtl.text,
       status: "ACTIVE",
+      completedOn: "",
       due: _dateCtl.text,
       important: _important,
     );

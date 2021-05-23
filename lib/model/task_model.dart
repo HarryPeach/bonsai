@@ -3,6 +3,7 @@ class TaskModel {
   final String name;
   final String desc;
   final String status;
+  final String completedOn;
   final String due;
   final bool important;
 
@@ -11,6 +12,7 @@ class TaskModel {
     required this.name,
     required this.desc,
     required this.status,
+    required this.completedOn,
     required this.due,
     required this.important,
   });
@@ -21,6 +23,7 @@ class TaskModel {
       'name': name,
       'desc': desc,
       'status': status,
+      'completedOn': completedOn,
       'due': due,
       'important': important == true ? 1 : 0,
     };
@@ -28,6 +31,6 @@ class TaskModel {
 
   @override
   String toString() {
-    return 'Task {id: $id, name: $name, desc: $desc, status: $status, due: $due, important: $important}';
+    return 'Task {id: $id, name: $name, desc: $desc, status: $status, completedOn: $completedOn, due: $due, important: $important}';
   }
 }

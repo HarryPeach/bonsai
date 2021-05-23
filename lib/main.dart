@@ -12,17 +12,6 @@ void main() async {
   // TODO: Find a way to put this in the constructor
   await tp.initdb(".");
 
-  var task = TaskModel(
-    id: 0,
-    name: "Sample Task",
-    desc: "A description for said task",
-    status: "ACTIVE",
-    due: "21/12/2021",
-    important: true,
-  );
-
-  await tp.insertTask(task);
-
   print(await tp.tasks());
 
   runApp(MyApp());
@@ -53,13 +42,21 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int count = 0;
-  List<TaskModel>? taskList;
+  int todaysTasksCount = 0;
+  List<TaskModel>? todaysTasks;
+  int soonTasksCount = 0;
+  List<TaskModel>? soonTasks;
+  int completedTasksCount = 0;
+  List<TaskModel>? completedTodayTasks;
 
   @override
   Widget build(BuildContext context) {
-    if (taskList == null) {
-      taskList = <TaskModel>[];
+    if (todaysTasks == null ||
+        soonTasks == null ||
+        completedTodayTasks == null) {
+      todaysTasks = <TaskModel>[];
+      soonTasks = <TaskModel>[];
+      completedTodayTasks = <TaskModel>[];
       updateListViews();
     }
     return Scaffold(
@@ -126,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
-            getBacklogTaskListView(),
+            getCompleteTodayTaskListView(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -147,6 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
+            getBacklogTaskListView(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -167,19 +165,46 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
+            getCompletedTodayTaskListView(),
           ],
         ),
       ),
     );
   }
 
-  ListView getBacklogTaskListView() {
+  ListView getCompleteTodayTaskListView() {
     return ListView.builder(
-      itemCount: count,
+      itemCount: todaysTasksCount,
       shrinkWrap: true,
       itemBuilder: (BuildContext context, int position) {
         return Task(
-          tm: this.taskList![position],
+          tm: this.todaysTasks![position],
+          onStateChange: () => updateListViews(),
+        );
+      },
+    );
+  }
+
+  ListView getBacklogTaskListView() {
+    return ListView.builder(
+      itemCount: soonTasksCount,
+      shrinkWrap: true,
+      itemBuilder: (BuildContext context, int position) {
+        return Task(
+          tm: this.soonTasks![position],
+          onStateChange: () => updateListViews(),
+        );
+      },
+    );
+  }
+
+  ListView getCompletedTodayTaskListView() {
+    return ListView.builder(
+      itemCount: completedTasksCount,
+      shrinkWrap: true,
+      itemBuilder: (BuildContext context, int position) {
+        return Task(
+          tm: this.completedTodayTasks![position],
           onStateChange: () => updateListViews(),
         );
       },
@@ -190,8 +215,28 @@ class _MyHomePageState extends State<MyHomePage> {
     var tp = TaskProvider();
     tp.tasks().then((tasks) {
       setState(() {
-        this.taskList = tasks;
-        this.count = tasks.length;
+        List<TaskModel> filteredTodaysTasks = tasks
+            .where((task) =>
+                task.due ==
+                    "${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}" &&
+                task.status != "DONE")
+            .toList();
+        this.todaysTasks = filteredTodaysTasks;
+        this.todaysTasksCount = filteredTodaysTasks.length;
+
+        List<TaskModel> filteredSoonTasks = tasks
+            .where((task) =>
+                task.due !=
+                    "${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}" &&
+                task.status == "ACTIVE")
+            .toList();
+        this.soonTasks = filteredSoonTasks;
+        this.soonTasksCount = filteredSoonTasks.length;
+
+        List<TaskModel> filteredCompletedTodayTasks =
+            tasks.where((task) => task.status == "DONE").toList();
+        this.completedTodayTasks = filteredCompletedTodayTasks;
+        this.completedTasksCount = filteredCompletedTodayTasks.length;
       });
     });
   }
