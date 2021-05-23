@@ -1,3 +1,4 @@
+import 'package:bonsai/model/task_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -6,11 +7,16 @@ import '../model/task_model.dart';
 
 class NewTaskCard extends StatefulWidget {
   final void Function(TaskModel) returnTask;
+  final String title;
   final bool editable;
   final TaskModel? task;
 
   NewTaskCard(
-      {Key? key, required this.returnTask, this.editable = true, this.task})
+      {Key? key,
+      required this.returnTask,
+      required this.title,
+      this.editable = true,
+      this.task})
       : super(key: key);
 
   @override
@@ -46,6 +52,49 @@ class _NewTaskCardState extends State<NewTaskCard> {
     _setFields();
   }
 
+  Future<void> _showDeleteDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('delete task'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                Text('are you sure you want to delete this task?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'delete',
+                style: TextStyle(
+                  color: Colors.red,
+                ),
+              ),
+              onPressed: () {
+                TaskProvider().deleteTask(widget.task!.id);
+                widget.returnTask(widget.task!);
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text("task deleted")));
+              },
+            ),
+            TextButton(
+              child: Text('cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _setFields() {
     if (widget.task == null) return;
 
@@ -66,7 +115,7 @@ class _NewTaskCardState extends State<NewTaskCard> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                _editable ? "new task" : "view task",
+                _editable ? widget.title : "view task",
                 style: TextStyle(
                   fontSize: 24.0,
                   fontWeight: FontWeight.bold,
@@ -86,7 +135,9 @@ class _NewTaskCardState extends State<NewTaskCard> {
                             icon: Icon(Icons.edit),
                           ),
                           IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              _showDeleteDialog();
+                            },
                             icon: Icon(Icons.delete),
                           )
                         ],

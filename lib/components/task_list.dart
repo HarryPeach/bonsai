@@ -29,7 +29,6 @@ class TaskList extends StatelessWidget {
           left: 8.0,
           right: 8.0,
           top: 16.0,
-          bottom: 16.0,
         ),
         child: Column(
           children: [
@@ -43,6 +42,7 @@ class TaskList extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                // TODO: Implement list expansion vvv
                 Text(
                   "+2 more",
                   style: TextStyle(
@@ -53,22 +53,25 @@ class TaskList extends StatelessWidget {
                 ),
               ],
             ),
-            (() {
-              if (taskCount > 0) {
-                return ListView.builder(
-                  itemCount: taskCount,
-                  shrinkWrap: true,
-                  itemBuilder: (BuildContext context, int position) {
-                    return Task(
-                      tm: this.tasks[position],
-                      onStateChange: () => onTaskChange(),
-                    );
-                  },
-                );
-              }
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: (() {
+                if (taskCount > 0) {
+                  return ListView.builder(
+                    itemCount: taskCount,
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int position) {
+                      return Task(
+                        tm: this.tasks[position],
+                        onStateChange: () => onTaskChange(),
+                      );
+                    },
+                  );
+                }
 
-              return emptyContainer!;
-            }())
+                return emptyContainer!;
+              }()),
+            )
           ],
         ),
       );

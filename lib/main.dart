@@ -8,8 +8,6 @@ import 'package:dart_date/dart_date.dart';
 import 'package:bonsai/components/task_list.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-import 'components/view_task_card.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -79,45 +77,47 @@ class _MyHomePageState extends State<MyHomePage> {
         titleSpacing: 0.0,
         title: Row(
           children: [
-            IconButton(
-              icon: Icon(Icons.chevron_left),
-              iconSize: 36.0,
-              color: Colors.black87,
-              onPressed: () {
-                setState(() => {currentDate = currentDate.subDays(1)});
-                updateListViews();
-              },
-            ),
-            Text(
-              "bonsai",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-                fontSize: 36,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Text(
+                "bonsai",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                  fontSize: 36,
+                ),
               ),
-            ),
-            IconButton(
-              icon: Icon(Icons.chevron_right),
-              iconSize: 36.0,
-              color: Colors.black87,
-              onPressed: () {
-                setState(() => {currentDate = currentDate.addDays(1)});
-                updateListViews();
-              },
             ),
           ],
         ),
         actions: [
           IconButton(
+            icon: Icon(Icons.settings),
+            iconSize: 24.0,
+            color: Colors.black87,
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("TODO: Implement settings screen")));
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.inbox),
+            iconSize: 24.0,
+            color: Colors.black87,
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("TODO: Implement archive screen")));
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.add),
-            iconSize: 36.0,
+            iconSize: 30.0,
             color: Colors.black87,
             onPressed: _showAddTaskSheet,
           ),
         ],
       ),
       body: ListView(
-        // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: EdgeInsets.only(left: 24.0, right: 24.0),
@@ -217,6 +217,7 @@ class _MyHomePageState extends State<MyHomePage> {
     var tp = TaskProvider();
     tp.tasks().then((tasks) {
       setState(() {
+        // TODO: Cleanup this block / make more efficient
         List<TaskModel> filteredTodaysTasks = tasks
             .where((task) =>
                 task.due == "${dateFormatter.format(currentDate)}" &&
@@ -255,6 +256,7 @@ class _MyHomePageState extends State<MyHomePage> {
           height: 420,
           child: Container(
             child: NewTaskCard(
+              title: "new task",
               returnTask: (task) => _addTask(task),
             ),
             decoration: BoxDecoration(

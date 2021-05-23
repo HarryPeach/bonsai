@@ -31,33 +31,33 @@ class _TaskState extends State<Task> {
   Widget build(BuildContext context) {
     _selected = widget.tm.status == "DONE";
 
-    return Row(
-      children: [
-        Checkbox(
-          value: _selected,
-          activeColor: Colors.black87,
-          onChanged: (val) async {
-            if (widget.tm.status == "ACTIVE") {
-              TaskProvider().completeTask(widget.tm.id);
-            } else {
-              TaskProvider().unCompleteTask(widget.tm.id);
-            }
-            widget.onStateChange();
-            _vibrate();
-          },
-        ),
-        InkWell(
-          onLongPress: () {
-            _showViewTaskSheet(widget.tm);
-          },
-          child: Text(
+    return InkWell(
+      onLongPress: () {
+        _showViewTaskSheet(widget.tm);
+      },
+      child: Row(
+        children: [
+          Checkbox(
+            value: _selected,
+            activeColor: Colors.black87,
+            onChanged: (val) async {
+              if (widget.tm.status == "ACTIVE") {
+                TaskProvider().completeTask(widget.tm.id);
+              } else {
+                TaskProvider().unCompleteTask(widget.tm.id);
+              }
+              widget.onStateChange();
+              _vibrate();
+            },
+          ),
+          Text(
             widget.tm.name,
             style: TextStyle(
               fontSize: 18,
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -78,6 +78,7 @@ class _TaskState extends State<Task> {
           height: 420,
           child: Container(
             child: NewTaskCard(
+              title: "edit task",
               task: task,
               editable: false,
               returnTask: (task) => _editTask(task),
