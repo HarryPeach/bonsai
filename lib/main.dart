@@ -208,6 +208,11 @@ class _MyHomePageState extends State<MyHomePage> {
     return "in " + daysLater.toString() + " days";
   }
 
+  void _addTask(TaskModel task) {
+    TaskProvider().insertTask(task);
+    updateListViews();
+  }
+
   void updateListViews() {
     var tp = TaskProvider();
     tp.tasks().then((tasks) {
@@ -250,7 +255,7 @@ class _MyHomePageState extends State<MyHomePage> {
           height: 420,
           child: Container(
             child: NewTaskCard(
-              onNewTask: () => updateListViews(),
+              returnTask: (task) => _addTask(task),
             ),
             decoration: BoxDecoration(
               color: Theme.of(context).canvasColor,

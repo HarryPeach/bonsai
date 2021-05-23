@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:bonsai/components/view_task_card.dart';
 import 'package:bonsai/model/task_model.dart';
 import 'package:bonsai/model/task_provider.dart';
 import 'package:vibration/vibration.dart';
+
+import 'new_task_card.dart';
 
 class Task extends StatefulWidget {
   final TaskModel tm;
@@ -60,6 +61,13 @@ class _TaskState extends State<Task> {
     );
   }
 
+  void _editTask(TaskModel task) {
+    TaskProvider().insertTask(task);
+    TaskProvider().deleteTask(widget.tm.id);
+    widget.onStateChange();
+  }
+
+  /// Show the "add new task" bottom sheet
   void _showViewTaskSheet(TaskModel task) {
     showModalBottomSheet(
       isScrollControlled: true,
@@ -69,8 +77,10 @@ class _TaskState extends State<Task> {
           color: Color(0xFF737373),
           height: 420,
           child: Container(
-            child: ViewTaskCard(
+            child: NewTaskCard(
               task: task,
+              editable: false,
+              returnTask: (task) => _editTask(task),
             ),
             decoration: BoxDecoration(
               color: Theme.of(context).canvasColor,

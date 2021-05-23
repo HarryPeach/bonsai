@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../model/task_model.dart';
-import '../model/task_provider.dart';
 
 class NewTaskCard extends StatefulWidget {
-  final VoidCallback onNewTask;
+  final void Function(TaskModel) returnTask;
+  final bool editable;
+  final TaskModel? task;
 
-  NewTaskCard({Key? key, required this.onNewTask}) : super(key: key);
+  NewTaskCard(
+      {Key? key, required this.returnTask, this.editable = true, this.task})
+      : super(key: key);
 
   @override
   _NewTaskCardState createState() => _NewTaskCardState();
@@ -16,14 +19,14 @@ class NewTaskCard extends StatefulWidget {
 
 class _NewTaskCardState extends State<NewTaskCard> {
   DateFormat dateFormmater = DateFormat("y/M/d");
-  final TextEditingController _taskNameCtl = TextEditingController();
-  final TextEditingController _taskDescCtl = TextEditingController();
-  final TextEditingController _dateCtl = TextEditingController();
+  TextEditingController _taskNameCtl = TextEditingController();
+  TextEditingController _taskDescCtl = TextEditingController();
+  TextEditingController _dateCtl = TextEditingController();
   bool _important = false;
+  bool _editable = true;
 
   // TODO: Async this
-  void _addNewTask() {
-    var tp = TaskProvider();
+  void _return() {
     var task = TaskModel(
       id: DateTime.now().microsecondsSinceEpoch,
       name: _taskNameCtl.text,
@@ -33,8 +36,24 @@ class _NewTaskCardState extends State<NewTaskCard> {
       due: _dateCtl.text,
       important: _important,
     );
-    tp.insertTask(task);
-    widget.onNewTask();
+    widget.returnTask(task);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _editable = widget.editable;
+    _setFields();
+  }
+
+  void _setFields() {
+    if (widget.task == null) return;
+
+    // TODO: Null check these fields
+    _taskNameCtl.value = TextEditingValue(text: widget.task!.name);
+    _taskDescCtl.value = TextEditingValue(text: widget.task!.desc);
+    _dateCtl.value = TextEditingValue(text: widget.task!.due);
+    _important = widget.task!.important;
   }
 
   @override
@@ -47,22 +66,45 @@ class _NewTaskCardState extends State<NewTaskCard> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "new task",
+                _editable ? "new task" : "view task",
                 style: TextStyle(
                   fontSize: 24.0,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 ),
               ),
-              IconButton(
-                icon: Icon(
-                  Icons.check,
-                ),
-                iconSize: 32.0,
-                onPressed: () {
-                  _addNewTask();
-                  Navigator.pop(context);
-                },
+              Row(
+                children: [
+                  (() {
+                    if (!_editable) {
+                      return Row(
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              setState(() => _editable = true);
+                            },
+                            icon: Icon(Icons.edit),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.delete),
+                          )
+                        ],
+                      );
+                    }
+                    return Container();
+                  }()),
+                  IconButton(
+                    icon: Icon(
+                      Icons.check,
+                    ),
+                    iconSize: 32.0,
+                    onPressed: () {
+                      _return();
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -72,19 +114,25 @@ class _NewTaskCardState extends State<NewTaskCard> {
               runSpacing: 10,
               children: [
                 TextFormField(
+                  focusNode: _editable ? null : AlwaysDisabledFocusNode(),
                   controller: _taskNameCtl,
                   decoration: InputDecoration(hintText: "task name"),
                 ),
                 TextFormField(
+                  focusNode: _editable ? null : AlwaysDisabledFocusNode(),
                   minLines: 4,
                   maxLines: 4,
                   controller: _taskDescCtl,
                   decoration: InputDecoration(hintText: "task description"),
                 ),
                 TextFormField(
+                  focusNode: _editable ? null : AlwaysDisabledFocusNode(),
                   controller: _dateCtl,
                   decoration: InputDecoration(hintText: "no completion date"),
                   onTap: () async {
+                    if (!_editable) {
+                      return;
+                    }
                     FocusScope.of(context).requestFocus(new FocusNode());
                     var date = await showDatePicker(
                       context: context,
@@ -103,7 +151,9 @@ class _NewTaskCardState extends State<NewTaskCard> {
                   contentPadding: EdgeInsets.zero,
                   title: Text("important task"),
                   value: _important,
-                  onChanged: (val) => setState(() => _important = val!),
+                  onChanged: _editable
+                      ? ((val) => setState(() => _important = val!))
+                      : null,
                 ),
               ],
             ),
@@ -112,4 +162,9 @@ class _NewTaskCardState extends State<NewTaskCard> {
       ),
     );
   }
+}
+
+class AlwaysDisabledFocusNode extends FocusNode {
+  @override
+  bool get hasFocus => false;
 }
