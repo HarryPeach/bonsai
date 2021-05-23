@@ -7,6 +7,7 @@ class TaskList extends StatelessWidget {
   final String title;
   final List<TaskModel> tasks;
   final int taskCount;
+  final Container? emptyContainer;
   final VoidCallback onTaskChange;
 
   const TaskList(
@@ -14,49 +15,63 @@ class TaskList extends StatelessWidget {
       required this.title,
       required this.tasks,
       required this.taskCount,
+      required this.emptyContainer,
       required this.onTaskChange})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                "+2 more",
-                style: TextStyle(
-                    fontSize: 18.0,
+    if (emptyContainer == null && taskCount == 0) {
+      return Container();
+    } else {
+      return Padding(
+        padding: const EdgeInsets.only(
+          left: 8.0,
+          right: 8.0,
+          top: 16.0,
+          bottom: 16.0,
+        ),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 24.0,
                     fontWeight: FontWeight.bold,
-                    fontStyle: FontStyle.italic,
-                    color: Colors.black38),
-              ),
-            ],
-          ),
-          (() {
-            return ListView.builder(
-              itemCount: taskCount,
-              shrinkWrap: true,
-              itemBuilder: (BuildContext context, int position) {
-                return Task(
-                  tm: this.tasks[position],
-                  onStateChange: () => onTaskChange(),
+                  ),
+                ),
+                Text(
+                  "+2 more",
+                  style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.black38),
+                ),
+              ],
+            ),
+            (() {
+              if (taskCount > 0) {
+                return ListView.builder(
+                  itemCount: taskCount,
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int position) {
+                    return Task(
+                      tm: this.tasks[position],
+                      onStateChange: () => onTaskChange(),
+                    );
+                  },
                 );
-              },
-            );
-          }())
-        ],
-      ),
-    );
+              }
+
+              return emptyContainer!;
+            }())
+          ],
+        ),
+      );
+    }
   }
 }

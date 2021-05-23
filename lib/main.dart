@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:todo/model/task_model.dart';
 import 'package:todo/model/task_provider.dart';
-import 'package:todo/components/newtaskcard.dart';
-import 'package:todo/components/task.dart';
+import 'package:todo/components/new_task_card.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:todo/components/task_list.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -107,31 +107,76 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            TaskList(
-              title: "complete " + getTitle(),
-              tasks: todaysTasks!,
-              taskCount: todaysTasksCount,
-              onTaskChange: updateListViews,
+      body: ListView(
+        // crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 24.0, right: 24.0),
+            child: Column(
+              children: <Widget>[
+                // TODO: Add dots for how many tasks planned on each day
+                TableCalendar(
+                    headerStyle: HeaderStyle(
+                      formatButtonVisible: false,
+                      leftChevronMargin: EdgeInsets.zero,
+                      rightChevronMargin: EdgeInsets.zero,
+                    ),
+                    startingDayOfWeek: StartingDayOfWeek.monday,
+                    calendarFormat: CalendarFormat.week,
+                    focusedDay: currentDate,
+                    selectedDayPredicate: (day) {
+                      return day.isSameDay(currentDate);
+                    },
+                    onDaySelected: (selectedDay, focusedDay) {
+                      setState(() => currentDate = selectedDay);
+                      updateListViews();
+                    },
+                    firstDay: DateTime.now().subYears(100),
+                    lastDay: DateTime.now().addYears(100)),
+                TaskList(
+                  title: "complete " + getTitle(),
+                  tasks: todaysTasks!,
+                  taskCount: todaysTasksCount,
+                  onTaskChange: updateListViews,
+                  emptyContainer: (currentDate
+                          .isBefore(DateTime.now().startOfDay))
+                      ? null
+                      : Container(
+                          child: Column(
+                            children: [
+                              Image(
+                                image: AssetImage("assets/think_hearts.png"),
+                              ),
+                              Text(
+                                "no tasks, why not start on the backlog?",
+                                style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                ),
+                TaskList(
+                  title: "backlog",
+                  tasks: soonTasks!,
+                  taskCount: soonTasksCount,
+                  onTaskChange: updateListViews,
+                  emptyContainer: Container(),
+                ),
+                TaskList(
+                  title: "completed " + getTitle(),
+                  tasks: completedTodayTasks!,
+                  taskCount: completedTasksCount,
+                  onTaskChange: updateListViews,
+                  emptyContainer: null,
+                ),
+              ],
             ),
-            TaskList(
-              title: "backlog",
-              tasks: soonTasks!,
-              taskCount: soonTasksCount,
-              onTaskChange: updateListViews,
-            ),
-            TaskList(
-              title: "completed " + getTitle(),
-              tasks: completedTodayTasks!,
-              taskCount: completedTasksCount,
-              onTaskChange: updateListViews,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
