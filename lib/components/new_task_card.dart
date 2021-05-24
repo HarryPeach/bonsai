@@ -116,11 +116,7 @@ class _NewTaskCardState extends State<NewTaskCard> {
             children: [
               Text(
                 _editable ? widget.title : "view task",
-                style: TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
+                style: Theme.of(context).textTheme.headline2,
               ),
               Row(
                 children: [
