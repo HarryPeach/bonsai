@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -7,17 +9,79 @@ import 'package:bonsai/components/new_task_card.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:bonsai/components/task_list.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:android_alarm_manager/android_alarm_manager.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
+
+void _reminderNotification() async {
+  DateFormat dateFormatter = DateFormat("y/M/d");
+  int importantTasks = 0;
+  int dueToday = 0;
+  int backlogTasks = 0;
+
+  await TaskProvider().tasks().then((tasks) {
+    tasks.forEach((element) {
+      if (element.due == "${dateFormatter.format(DateTime.now())}" &&
+          element.status != "DONE") dueToday++;
+      if (element.important) importantTasks++;
+      if (element.status != "DONE") backlogTasks++;
+      print(importantTasks);
+    });
+  });
+
+  print(importantTasks);
+
+  AwesomeNotifications().createNotification(
+    content: NotificationContent(
+      id: 10,
+      channelKey: 'reminder_channel',
+      title: 'You have <b>$dueToday</b> tasks due today',
+      summary: "Task reminder",
+      body: '''
+      <b>$backlogTasks</b> total tasks in the backlog, <b>$importantTasks</b> of which are important.
+      ''',
+      notificationLayout: NotificationLayout.BigText,
+    ),
+  );
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  var tp = TaskProvider();
   // TODO: Find a way to put this in the constructor
-  await tp.initdb(".");
+  await TaskProvider().initdb(".");
 
-  print(await tp.tasks());
+  print(await TaskProvider().tasks());
+
+  await AndroidAlarmManager.initialize();
+
+  AwesomeNotifications().initialize(
+    // set the icon to null if you want to use the default app icon
+    // 'resource://drawable/res_app_icon',
+    null,
+    [
+      NotificationChannel(
+        channelKey: 'reminder_channel',
+        channelName: 'Reminder notifications',
+        channelDescription: 'Notification channel for daily reminders',
+        defaultColor: Color(0xFF9D50DD),
+        ledColor: Colors.white,
+      ),
+    ],
+  );
 
   runApp(MyApp());
+
+  if (Platform.isAndroid) {
+    await AndroidAlarmManager.periodic(
+      const Duration(hours: 24), //Do the same every 24 hours
+      0, //Different ID for each alarm
+      _reminderNotification,
+      wakeup: false, //the device will be woken up when the alarm fires
+      startAt: DateTime(DateTime.now().year, DateTime.now().month,
+          DateTime.now().day, 08, 00), //Start whit the specific time 5:00 am
+      rescheduleOnReboot: true, //Work after reboot
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -57,9 +121,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.white, //or set color with: Color(0xFF0000FF)
-    ));
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.white,
+      ),
+    );
+
+    AwesomeNotifications().isNotificationAllowed().then(
+      (isAllowed) {
+        if (!isAllowed) {
+          // Insert here your friendly dialog box before call the request method
+          // This is very important to not harm the user experience
+          AwesomeNotifications().requestPermissionToSendNotifications();
+        }
+      },
+    );
 
     if (todaysTasks == null ||
         soonTasks == null ||
@@ -98,6 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text("TODO: Implement settings screen")));
+              _reminderNotification();
             },
           ),
           IconButton(
@@ -251,19 +328,22 @@ class _MyHomePageState extends State<MyHomePage> {
       isScrollControlled: true,
       context: context,
       builder: (context) {
-        return Container(
-          color: Color(0xFF737373),
-          height: 420,
+        return Padding(
+          padding: MediaQuery.of(context).viewInsets,
           child: Container(
-            child: NewTaskCard(
-              title: "new task",
-              returnTask: (task) => _addTask(task),
-            ),
-            decoration: BoxDecoration(
-              color: Theme.of(context).canvasColor,
-              borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(10),
-                topRight: const Radius.circular(10),
+            color: Color(0xFF737373),
+            height: 420,
+            child: Container(
+              child: NewTaskCard(
+                title: "new task",
+                returnTask: (task) => _addTask(task),
+              ),
+              decoration: BoxDecoration(
+                color: Theme.of(context).canvasColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(10),
+                  topRight: const Radius.circular(10),
+                ),
               ),
             ),
           ),

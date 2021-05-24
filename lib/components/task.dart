@@ -73,21 +73,24 @@ class _TaskState extends State<Task> {
       isScrollControlled: true,
       context: context,
       builder: (context) {
-        return Container(
-          color: Color(0xFF737373),
-          height: 420,
+        return Padding(
+          padding: MediaQuery.of(context).viewInsets,
           child: Container(
-            child: NewTaskCard(
-              title: "edit task",
-              task: task,
-              editable: false,
-              returnTask: (task) => _editTask(task),
-            ),
-            decoration: BoxDecoration(
-              color: Theme.of(context).canvasColor,
-              borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(10),
-                topRight: const Radius.circular(10),
+            color: Color(0xFF737373),
+            height: 420,
+            child: Container(
+              child: NewTaskCard(
+                title: "edit task",
+                task: task,
+                editable: false,
+                returnTask: (task) => _editTask(task),
+              ),
+              decoration: BoxDecoration(
+                color: Theme.of(context).canvasColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(10),
+                  topRight: const Radius.circular(10),
+                ),
               ),
             ),
           ),
