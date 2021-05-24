@@ -28,7 +28,8 @@ class TaskList extends StatelessWidget {
         padding: const EdgeInsets.only(
           left: 8.0,
           right: 8.0,
-          top: 16.0,
+          top: 24.0,
+          // bottom: 16.0,
         ),
         child: Column(
           children: [
@@ -43,10 +44,10 @@ class TaskList extends StatelessWidget {
                   ),
                 ),
                 // TODO: Implement list expansion vvv
-                Text(
-                  "+2 more",
-                  style: Theme.of(context).textTheme.headline4,
-                ),
+                // Text(
+                //   "+2 more",
+                //   style: Theme.of(context).textTheme.headline4,
+                // ),
               ],
             ),
             Padding(

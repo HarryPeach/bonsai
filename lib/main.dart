@@ -325,7 +325,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   tasks: soonTasks!,
                   taskCount: soonTasksCount,
                   onTaskChange: updateListViews,
-                  emptyContainer: Container(),
+                  emptyContainer: Container(
+                    child: Text(
+                      "you're all out of tasks!",
+                      style: Theme.of(context).textTheme.headline3,
+                    ),
+                  ),
                 ),
                 TaskList(
                   title: "completed " + getTitle(),
