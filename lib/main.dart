@@ -24,7 +24,7 @@ void _reminderNotification() async {
         (element) {
           if (element.due == "${dateFormatter.format(DateTime.now())}" &&
               element.status != "DONE") dueToday++;
-          if (element.important) importantTasks++;
+          if (element.important && element.status != "DONE") importantTasks++;
           if (element.status != "DONE") backlogTasks++;
         },
       );
@@ -87,7 +87,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   MyApp({Key? key}) : super(key: key);
 
-  ThemeData lightMode = ThemeData(
+  final ThemeData lightMode = ThemeData(
     brightness: Brightness.light,
     backgroundColor: Colors.white,
     textTheme: TextTheme(
@@ -101,12 +101,21 @@ class MyApp extends StatelessWidget {
         fontWeight: FontWeight.bold,
         color: Colors.black87,
       ),
+      headline3: TextStyle(
+        fontSize: 18.0,
+        color: Colors.black54,
+      ),
+      headline4: TextStyle(
+        fontSize: 18.0,
+        color: Colors.black45,
+        fontStyle: FontStyle.italic,
+      ),
     ),
   );
 
-  ThemeData darkMode = ThemeData(
+  final ThemeData darkMode = ThemeData(
     brightness: Brightness.dark,
-    backgroundColor: Colors.black87,
+    backgroundColor: Colors.grey[900],
     textTheme: TextTheme(
       headline1: TextStyle(
         fontSize: 36.0,
@@ -118,6 +127,15 @@ class MyApp extends StatelessWidget {
         fontWeight: FontWeight.bold,
         color: Colors.white,
       ),
+      headline3: TextStyle(
+        fontSize: 18.0,
+        color: Colors.white54,
+      ),
+      headline4: TextStyle(
+        fontSize: 18.0,
+        color: Colors.white54,
+        fontStyle: FontStyle.italic,
+      ),
     ),
     iconTheme: IconThemeData(color: Colors.white),
   );
@@ -126,7 +144,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'bonsai',
-      theme: lightMode,
+      theme: darkMode,
       home: MyHomePage(),
     );
   }
@@ -263,11 +281,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                               Text(
                                 "no tasks, why not start on the backlog?",
-                                style: TextStyle(
-                                  color: Colors.black54,
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: Theme.of(context).textTheme.headline3,
                               ),
                             ],
                           ),
