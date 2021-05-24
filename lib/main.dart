@@ -31,11 +31,43 @@ void _reminderNotification() async {
     },
   );
 
+  if (backlogTasks == 0) {
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: 10,
+        channelKey: 'reminder_channel',
+        title: Emojis.activites_party_popper + ' You have no tasks today!',
+        summary: "Daily Task reminder",
+        body: '''
+      Why not add some to the backlog?
+      ''',
+        notificationLayout: NotificationLayout.BigText,
+      ),
+    );
+    return;
+  }
+
+  if (dueToday == 0 && backlogTasks > 0) {
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: 10,
+        channelKey: 'reminder_channel',
+        title: Emojis.activites_party_popper + ' You have no tasks due today!',
+        summary: "Daily Task reminder",
+        body: '''
+      There are still ${Emojis.mail_inbox_tray} <b>$backlogTasks</b> total tasks in the backlog, ${Emojis.icon_anger_symbol} <b>$importantTasks</b> of which are important.
+      ''',
+        notificationLayout: NotificationLayout.BigText,
+      ),
+    );
+    return;
+  }
+
   AwesomeNotifications().createNotification(
     content: NotificationContent(
       id: 10,
       channelKey: 'reminder_channel',
-      title: Emojis.activites_party_popper +
+      title: Emojis.activites_ticket +
           ' You have <b>$dueToday</b> tasks due today',
       summary: "Daily Task reminder",
       body: '''
