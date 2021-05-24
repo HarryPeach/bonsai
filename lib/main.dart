@@ -18,28 +18,28 @@ void _reminderNotification() async {
   int dueToday = 0;
   int backlogTasks = 0;
 
-  if (TaskProvider().tasks() == null) {
-    TaskProvider().initdb(".");
-  }
-
-  await TaskProvider().tasks().then((tasks) {
-    tasks.forEach((element) {
-      if (element.due == "${dateFormatter.format(DateTime.now())}" &&
-          element.status != "DONE") dueToday++;
-      if (element.important) importantTasks++;
-      if (element.status != "DONE") backlogTasks++;
-      print(importantTasks);
-    });
-  });
+  await TaskProvider().tasks().then(
+    (tasks) {
+      tasks.forEach(
+        (element) {
+          if (element.due == "${dateFormatter.format(DateTime.now())}" &&
+              element.status != "DONE") dueToday++;
+          if (element.important && element.status != "DONE") importantTasks++;
+          if (element.status != "DONE") backlogTasks++;
+        },
+      );
+    },
+  );
 
   AwesomeNotifications().createNotification(
     content: NotificationContent(
       id: 10,
       channelKey: 'reminder_channel',
-      title: 'You have <b>$dueToday</b> tasks due today',
+      title: Emojis.activites_party_popper +
+          ' You have <b>$dueToday</b> tasks due today',
       summary: "Daily Task reminder",
       body: '''
-      <b>$backlogTasks</b> total tasks in the backlog, <b>$importantTasks</b> of which are important.
+      ${Emojis.mail_inbox_tray} <b>$backlogTasks</b> total tasks in the backlog, ${Emojis.icon_anger_symbol} <b>$importantTasks</b> of which are important.
       ''',
       notificationLayout: NotificationLayout.BigText,
     ),
@@ -88,15 +88,64 @@ void main() async {
 class MyApp extends StatelessWidget {
   MyApp({Key? key}) : super(key: key);
 
+  final ThemeData lightMode = ThemeData(
+    brightness: Brightness.light,
+    backgroundColor: Colors.white,
+    textTheme: TextTheme(
+      headline1: TextStyle(
+        fontSize: 36.0,
+        fontWeight: FontWeight.bold,
+        color: Colors.black87,
+      ),
+      headline2: TextStyle(
+        fontSize: 24.0,
+        fontWeight: FontWeight.bold,
+        color: Colors.black87,
+      ),
+      headline3: TextStyle(
+        fontSize: 18.0,
+        color: Colors.black54,
+      ),
+      headline4: TextStyle(
+        fontSize: 18.0,
+        color: Colors.black45,
+        fontStyle: FontStyle.italic,
+      ),
+    ),
+  );
+
+  final ThemeData darkMode = ThemeData(
+    brightness: Brightness.dark,
+    backgroundColor: Colors.grey[900],
+    textTheme: TextTheme(
+      headline1: TextStyle(
+        fontSize: 36.0,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
+      headline2: TextStyle(
+        fontSize: 24.0,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
+      headline3: TextStyle(
+        fontSize: 18.0,
+        color: Colors.white54,
+      ),
+      headline4: TextStyle(
+        fontSize: 18.0,
+        color: Colors.white54,
+        fontStyle: FontStyle.italic,
+      ),
+    ),
+    iconTheme: IconThemeData(color: Colors.white),
+  );
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'bonsai',
-      theme: ThemeData(
-        primaryColor: Colors.yellow[800],
-        accentColor: Colors.black,
-        backgroundColor: Colors.white,
-      ),
+      theme: darkMode,
       home: MyHomePage(),
     );
   }
@@ -124,7 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
+        statusBarColor: Theme.of(context).backgroundColor,
       ),
     );
 
@@ -147,8 +196,9 @@ class _MyHomePageState extends State<MyHomePage> {
       updateListViews();
     }
     return Scaffold(
+      backgroundColor: Theme.of(context).backgroundColor,
       appBar: AppBar(
-        toolbarHeight: 60.0,
+        toolbarHeight: 80.0,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         titleSpacing: 0.0,
@@ -158,11 +208,7 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Text(
                 "bonsai",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                  fontSize: 36,
-                ),
+                style: Theme.of(context).textTheme.headline1,
               ),
             ),
           ],
@@ -171,7 +217,7 @@ class _MyHomePageState extends State<MyHomePage> {
           IconButton(
             icon: Icon(Icons.settings),
             iconSize: 24.0,
-            color: Colors.black87,
+            color: Theme.of(context).iconTheme.color,
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text("TODO: Implement settings screen")));
@@ -181,7 +227,7 @@ class _MyHomePageState extends State<MyHomePage> {
           IconButton(
             icon: Icon(Icons.inbox),
             iconSize: 24.0,
-            color: Colors.black87,
+            color: Theme.of(context).iconTheme.color,
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text("TODO: Implement archive screen")));
@@ -190,7 +236,7 @@ class _MyHomePageState extends State<MyHomePage> {
           IconButton(
             icon: const Icon(Icons.add),
             iconSize: 30.0,
-            color: Colors.black87,
+            color: Theme.of(context).iconTheme.color,
             onPressed: _showAddTaskSheet,
           ),
         ],
@@ -236,11 +282,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                               Text(
                                 "no tasks, why not start on the backlog?",
-                                style: TextStyle(
-                                  color: Colors.black54,
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: Theme.of(context).textTheme.headline3,
                               ),
                             ],
                           ),
@@ -332,7 +374,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return Padding(
           padding: MediaQuery.of(context).viewInsets,
           child: Container(
-            color: Color(0xFF737373),
+            color: Theme.of(context).backgroundColor,
             height: 420,
             child: Container(
               child: NewTaskCard(

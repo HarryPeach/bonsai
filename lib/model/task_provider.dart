@@ -14,15 +14,15 @@ class TaskProvider {
 
   factory TaskProvider() => _instance ?? TaskProvider._internal();
 
-  // Future<Database> get db async {
-  //   if (_db != null) return _db!;
+  Future<Database> get db async {
+    if (_db != null) return _db!;
 
-  //   _db = await initdb("dbs/");
-  //   return _db!;
-  // }
+    _db = await initdb(".");
+    return _db!;
+  }
 
-  Future initdb(String path) async {
-    _db = await openDatabase(
+  Future<Database> initdb(String path) async {
+    return await openDatabase(
       join(await getDatabasesPath(), 'tasksdb.db'),
       onCreate: (db, version) {
         return db.execute('''CREATE TABLE tasks(
@@ -37,10 +37,12 @@ class TaskProvider {
       },
       version: 1,
     );
+    // return _db;
   }
 
   Future<void> unCompleteTask(int id) async {
-    await _db!.rawUpdate('''
+    final Database db = await this.db;
+    await db.rawUpdate('''
     UPDATE tasks
     SET status = 'ACTIVE', completedOn = ''
     WHERE id = ?
@@ -48,7 +50,8 @@ class TaskProvider {
   }
 
   Future<void> completeTask(int id) async {
-    await _db!.rawUpdate('''
+    final Database db = await this.db;
+    await db.rawUpdate('''
     UPDATE tasks
     SET status = 'DONE', completedOn = ?
     WHERE id = ?
@@ -56,7 +59,8 @@ class TaskProvider {
   }
 
   Future<void> insertTask(TaskModel task) async {
-    await _db!.insert(
+    final Database db = await this.db;
+    await db.insert(
       'tasks',
       task.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -64,7 +68,8 @@ class TaskProvider {
   }
 
   Future<void> deleteTask(int id) async {
-    await _db!.delete(
+    final Database db = await this.db;
+    await db.delete(
       'tasks',
       where: 'id = ?',
       whereArgs: [id],
@@ -72,7 +77,8 @@ class TaskProvider {
   }
 
   Future<List<TaskModel>> tasks() async {
-    final List<Map<String, dynamic>> maps = await _db!.query('tasks');
+    final Database db = await this.db;
+    final List<Map<String, dynamic>> maps = await db.query('tasks');
 
     return List.generate(
       maps.length,

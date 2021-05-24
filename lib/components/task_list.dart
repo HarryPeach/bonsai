@@ -45,11 +45,7 @@ class TaskList extends StatelessWidget {
                 // TODO: Implement list expansion vvv
                 Text(
                   "+2 more",
-                  style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
-                      color: Colors.black38),
+                  style: Theme.of(context).textTheme.headline4,
                 ),
               ],
             ),
