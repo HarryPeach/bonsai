@@ -18,6 +18,10 @@ void _reminderNotification() async {
   int dueToday = 0;
   int backlogTasks = 0;
 
+  if (TaskProvider().tasks() == null) {
+    TaskProvider().initdb(".");
+  }
+
   await TaskProvider().tasks().then((tasks) {
     tasks.forEach((element) {
       if (element.due == "${dateFormatter.format(DateTime.now())}" &&
@@ -28,14 +32,12 @@ void _reminderNotification() async {
     });
   });
 
-  print(importantTasks);
-
   AwesomeNotifications().createNotification(
     content: NotificationContent(
       id: 10,
       channelKey: 'reminder_channel',
       title: 'You have <b>$dueToday</b> tasks due today',
-      summary: "Task reminder",
+      summary: "Daily Task reminder",
       body: '''
       <b>$backlogTasks</b> total tasks in the backlog, <b>$importantTasks</b> of which are important.
       ''',
@@ -49,10 +51,9 @@ void main() async {
 
   // TODO: Find a way to put this in the constructor
   await TaskProvider().initdb(".");
+  await AndroidAlarmManager.initialize();
 
   print(await TaskProvider().tasks());
-
-  await AndroidAlarmManager.initialize();
 
   AwesomeNotifications().initialize(
     // set the icon to null if you want to use the default app icon
