@@ -36,11 +36,19 @@ dependencies:
   awesome_notifications: ^0.0.6+7
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.9.0
   flutter_test:
     sdk: flutter
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+flutter_icons:
+  ios: false
+  android: true
+  image_path: "assets/icon/fallback.png"
+  adaptive_icon_background: "assets/icon/background.png"
+  adaptive_icon_foreground: "assets/icon/foreground.png"
 
 # The following section is specific to Flutter.
 flutter:
