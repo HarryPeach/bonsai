@@ -35,10 +35,11 @@ void _reminderNotification() async {
     content: NotificationContent(
       id: 10,
       channelKey: 'reminder_channel',
-      title: 'You have <b>$dueToday</b> tasks due today',
+      title: Emojis.activites_party_popper +
+          ' You have <b>$dueToday</b> tasks due today',
       summary: "Daily Task reminder",
       body: '''
-      <b>$backlogTasks</b> total tasks in the backlog, <b>$importantTasks</b> of which are important.
+      ${Emojis.mail_inbox_tray} <b>$backlogTasks</b> total tasks in the backlog, ${Emojis.icon_anger_symbol} <b>$importantTasks</b> of which are important.
       ''',
       notificationLayout: NotificationLayout.BigText,
     ),
