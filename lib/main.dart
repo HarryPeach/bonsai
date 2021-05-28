@@ -123,7 +123,7 @@ class MyApp extends StatelessWidget {
     brightness: Brightness.light,
     accentColor: Colors.yellow[800],
     backgroundColor: Colors.white,
-    hintColor: Colors.black12,
+    indicatorColor: Colors.black12,
     textTheme: TextTheme(
       headline1: TextStyle(
         fontSize: 36.0,
@@ -153,7 +153,7 @@ class MyApp extends StatelessWidget {
   final ThemeData darkMode = ThemeData(
     brightness: Brightness.dark,
     accentColor: Colors.yellow[700],
-    hintColor: Colors.black26,
+    indicatorColor: Colors.black26,
     backgroundColor: Colors.grey[900],
     textTheme: TextTheme(
       headline1: TextStyle(
@@ -303,7 +303,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         color: Theme.of(context).accentColor,
                       ),
                       todayDecoration: BoxDecoration(
-                        color: Theme.of(context).hintColor,
+                        color: Theme.of(context).indicatorColor,
                       ),
                       todayTextStyle: TextStyle(
                         color: Theme.of(context).textTheme.bodyText1!.color,
@@ -383,6 +383,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (daysLater > 7) {
       return "on " + dateFormatter.format(currentDate);
+    }
+
+    if (currentDate.isBefore(DateTime.now())) {
+      return (daysLater - 1).abs().toString() + " days ago";
     }
 
     return "in " + daysLater.toString() + " days";
