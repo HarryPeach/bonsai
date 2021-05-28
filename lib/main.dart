@@ -121,7 +121,9 @@ class MyApp extends StatelessWidget {
 
   final ThemeData lightMode = ThemeData(
     brightness: Brightness.light,
+    accentColor: Colors.yellow[800],
     backgroundColor: Colors.white,
+    hintColor: Colors.black12,
     textTheme: TextTheme(
       headline1: TextStyle(
         fontSize: 36.0,
@@ -142,11 +144,16 @@ class MyApp extends StatelessWidget {
         color: Colors.black45,
         fontStyle: FontStyle.italic,
       ),
+      bodyText1: TextStyle(
+        color: Colors.black87,
+      ),
     ),
   );
 
   final ThemeData darkMode = ThemeData(
     brightness: Brightness.dark,
+    accentColor: Colors.yellow[700],
+    hintColor: Colors.black26,
     backgroundColor: Colors.grey[900],
     textTheme: TextTheme(
       headline1: TextStyle(
@@ -167,6 +174,9 @@ class MyApp extends StatelessWidget {
         fontSize: 18.0,
         color: Colors.white54,
         fontStyle: FontStyle.italic,
+      ),
+      bodyText1: TextStyle(
+        color: Colors.white,
       ),
     ),
     iconTheme: IconThemeData(color: Colors.white),
@@ -284,6 +294,20 @@ class _MyHomePageState extends State<MyHomePage> {
                       formatButtonVisible: false,
                       leftChevronMargin: EdgeInsets.zero,
                       rightChevronMargin: EdgeInsets.zero,
+                    ),
+                    calendarStyle: CalendarStyle(
+                      selectedTextStyle: TextStyle(
+                        color: Theme.of(context).backgroundColor,
+                      ),
+                      selectedDecoration: BoxDecoration(
+                        color: Theme.of(context).accentColor,
+                      ),
+                      todayDecoration: BoxDecoration(
+                        color: Theme.of(context).hintColor,
+                      ),
+                      todayTextStyle: TextStyle(
+                        color: Theme.of(context).textTheme.bodyText1!.color,
+                      ),
                     ),
                     startingDayOfWeek: StartingDayOfWeek.monday,
                     calendarFormat: CalendarFormat.week,

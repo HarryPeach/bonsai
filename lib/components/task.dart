@@ -35,28 +35,49 @@ class _TaskState extends State<Task> {
       onLongPress: () {
         _showViewTaskSheet(widget.tm);
       },
-      child: Row(
-        children: [
-          Checkbox(
-            value: _selected,
-            activeColor: Colors.black87,
-            onChanged: (val) async {
-              if (widget.tm.status == "ACTIVE") {
-                TaskProvider().completeTask(widget.tm.id);
-              } else {
-                TaskProvider().unCompleteTask(widget.tm.id);
-              }
-              widget.onStateChange();
-              _vibrate();
-            },
-          ),
-          Text(
-            widget.tm.name,
-            style: TextStyle(
-              fontSize: 18,
+      child: Expanded(
+        child: Row(
+          children: [
+            Checkbox(
+              value: _selected,
+              activeColor: Colors.black87,
+              onChanged: (val) async {
+                if (widget.tm.status == "ACTIVE") {
+                  TaskProvider().completeTask(widget.tm.id);
+                } else {
+                  TaskProvider().unCompleteTask(widget.tm.id);
+                }
+                widget.onStateChange();
+                _vibrate();
+              },
             ),
-          ),
-        ],
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    widget.tm.name,
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
+                  (() {
+                    if (widget.tm.important) {
+                      return Icon(
+                        Icons.assignment_late,
+                        color: Theme.of(context).accentColor,
+                        size: 24.0,
+                      );
+                    } else {
+                      // return Icon(Icons.ac_unit);
+                      return Container();
+                    }
+                  }())
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
