@@ -55,6 +55,7 @@ class TaskList extends StatelessWidget {
               child: (() {
                 if (taskCount > 0) {
                   return ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
                     itemCount: taskCount,
                     shrinkWrap: true,
                     itemBuilder: (BuildContext context, int position) {
