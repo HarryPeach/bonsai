@@ -50,10 +50,29 @@ class _TaskState extends State<Task> {
               _vibrate();
             },
           ),
-          Text(
-            widget.tm.name,
-            style: TextStyle(
-              fontSize: 18,
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  widget.tm.name,
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
+                (() {
+                  if (widget.tm.important) {
+                    return Icon(
+                      Icons.assignment_late,
+                      color: Theme.of(context).accentColor,
+                      size: 24.0,
+                    );
+                  } else {
+                    // return Icon(Icons.ac_unit);
+                    return Container();
+                  }
+                }())
+              ],
             ),
           ),
         ],
