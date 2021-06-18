@@ -90,9 +90,9 @@ class _TaskState extends State<Task> {
                 (() {
                   if (widget.tm.important) {
                     return Icon(
-                      Icons.assignment_late,
+                      Icons.circle,
                       color: Theme.of(context).accentColor,
-                      size: 24.0,
+                      size: 10.0,
                     );
                   } else {
                     // return Icon(Icons.ac_unit);
