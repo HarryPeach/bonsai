@@ -1,7 +1,9 @@
+import 'package:dart_date/dart_date.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bonsai/model/task_model.dart';
 import 'package:bonsai/model/task_provider.dart';
+import 'package:intl/intl.dart';
 import 'package:vibration/vibration.dart';
 
 import 'new_task_card.dart';
@@ -19,6 +21,7 @@ class Task extends StatefulWidget {
 
 class _TaskState extends State<Task> {
   bool _selected = false;
+  DateFormat dateFormatter = DateFormat("y/M/d");
 
   void _vibrate() async {
     var hasVibrate = await Vibration.hasVibrator();
@@ -30,6 +33,7 @@ class _TaskState extends State<Task> {
   @override
   Widget build(BuildContext context) {
     _selected = widget.tm.status == "DONE";
+    String inDays = getTaskDays();
 
     return InkWell(
       onLongPress: () {
@@ -64,16 +68,23 @@ class _TaskState extends State<Task> {
                         fontSize: 18,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2.0),
-                      child: Text(
-                        "in 3 days",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Theme.of(context).textTheme.headline3!.color,
-                        ),
-                      ),
-                    ),
+                    (() {
+                      if (inDays != "") {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 2.0),
+                          child: Text(
+                            inDays,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color:
+                                  Theme.of(context).textTheme.headline3!.color,
+                            ),
+                          ),
+                        );
+                      } else {
+                        return Container();
+                      }
+                    }()),
                   ],
                 ),
                 (() {
@@ -94,6 +105,30 @@ class _TaskState extends State<Task> {
         ],
       ),
     );
+  }
+
+  String getTaskDays() {
+    if (widget.tm.due == "") {
+      return "";
+    } else {
+      print(widget.tm.due);
+      DateTime due = DateFormat("yyyy/MM/dd").parse(widget.tm.due);
+      if (due.isTomorrow) {
+        return "due tomorrow";
+      }
+
+      if (due.isYesterday) {
+        return "due yesterday";
+      }
+
+      if (due.isAfter(DateTime.now().add(Duration(days: 1)))) {
+        int daysLater = due.difference(DateTime.now()).inDays;
+        return ("in $daysLater days");
+      } else {
+        int daysAge = due.difference(DateTime.now()).inDays.abs();
+        return ("$daysAge days ago");
+      }
+    }
   }
 
   void _editTask(TaskModel task) {
