@@ -54,11 +54,27 @@ class _TaskState extends State<Task> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  widget.tm.name,
-                  style: TextStyle(
-                    fontSize: 18,
-                  ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.tm.name,
+                      style: TextStyle(
+                        fontSize: 18,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2.0),
+                      child: Text(
+                        "in 3 days",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Theme.of(context).textTheme.headline3!.color,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 (() {
                   if (widget.tm.important) {
