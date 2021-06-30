@@ -1,10 +1,12 @@
-# bonsai
+# :evergreen_tree: bonsai
 
+<p float="left">
 <img src="https://user-images.githubusercontent.com/4750998/124027052-52d1fc00-d9ea-11eb-9101-6809ed7aa181.png" width="200" />
 
 <img src="https://user-images.githubusercontent.com/4750998/124027087-5c5b6400-d9ea-11eb-9ecf-39c6214ba6a5.png" width="200" />
 
 <img src="https://user-images.githubusercontent.com/4750998/124027071-58c7dd00-d9ea-11eb-8cbf-730bb5d1d825.png" width="200" />
+</p>
 
 > bonsai is a todo app with an 'agile' style of task management
 
