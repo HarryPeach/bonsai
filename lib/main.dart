@@ -12,6 +12,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 
+/// Creates and pushes the reminder notification
 void _reminderNotification() async {
   DateFormat dateFormatter = DateFormat("y/M/d");
   int importantTasks = 0;
@@ -370,6 +371,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  // Gets the title of the current page based on the date
   String getTitle() {
     if (currentDate.isToday) {
       return "today";
@@ -397,6 +399,7 @@ class _MyHomePageState extends State<MyHomePage> {
     updateListViews();
   }
 
+  // Updates all available task listviews
   void updateListViews() {
     var tp = TaskProvider();
     tp.tasks().then((tasks) {

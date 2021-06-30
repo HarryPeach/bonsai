@@ -107,11 +107,11 @@ class _TaskState extends State<Task> {
     );
   }
 
+  /// Gets the formatted date string for when the task is due
   String getTaskDays() {
     if (widget.tm.due == "") {
       return "";
     } else {
-      print(widget.tm.due);
       DateTime due = DateFormat("yyyy/MM/dd").parse(widget.tm.due);
       if (due.isTomorrow) {
         return "due tomorrow";
