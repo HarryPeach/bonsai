@@ -17,6 +17,7 @@ class TaskModel {
     required this.important,
   });
 
+  /// Get task to a map
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -29,6 +30,7 @@ class TaskModel {
     };
   }
 
+  /// Get string representation of a task
   @override
   String toString() {
     return 'Task {id: $id, name: $name, desc: $desc, status: $status, completedOn: $completedOn, due: $due, important: $important}';

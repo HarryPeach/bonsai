@@ -14,6 +14,7 @@ class TaskProvider {
 
   factory TaskProvider() => _instance ?? TaskProvider._internal();
 
+  /// Get the database singleton instance
   Future<Database> get db async {
     if (_db != null) return _db!;
 
@@ -21,6 +22,7 @@ class TaskProvider {
     return _db!;
   }
 
+  /// Initialises the database
   Future<Database> initdb(String path) async {
     return await openDatabase(
       join(await getDatabasesPath(), 'tasksdb.db'),
@@ -40,6 +42,7 @@ class TaskProvider {
     // return _db;
   }
 
+  /// Un-complete / uncheck a task
   Future<void> unCompleteTask(int id) async {
     final Database db = await this.db;
     await db.rawUpdate('''
@@ -49,6 +52,7 @@ class TaskProvider {
     ''', [id]);
   }
 
+  /// Complete / check-off a task
   Future<void> completeTask(int id) async {
     final Database db = await this.db;
     await db.rawUpdate('''
@@ -58,6 +62,7 @@ class TaskProvider {
     ''', ["${dateFormatter.format(DateTime.now())}", id]);
   }
 
+  /// Insert a new task
   Future<void> insertTask(TaskModel task) async {
     final Database db = await this.db;
     await db.insert(
@@ -67,6 +72,7 @@ class TaskProvider {
     );
   }
 
+  /// Delete a task entirely
   Future<void> deleteTask(int id) async {
     final Database db = await this.db;
     await db.delete(
@@ -76,6 +82,7 @@ class TaskProvider {
     );
   }
 
+  /// Get all tasks
   Future<List<TaskModel>> tasks() async {
     final Database db = await this.db;
     final List<Map<String, dynamic>> maps = await db.query('tasks');
