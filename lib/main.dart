@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:bonsai/model/task_model.dart';
 import 'package:bonsai/model/task_provider.dart';
@@ -77,14 +78,28 @@ void _reminderNotification() async {
   );
 }
 
+final FlutterLocalNotificationsPlugin flutterNotifications = FlutterLocalNotificationsPlugin();
+
+Future _showNotification() async {
+   var androidNotificationDetails = new AndroidNotificationDetails("reminder_channel", "Daily Reminders");
+   var notificationDetails = new NotificationDetails(android: androidNotificationDetails);
+ 
+    await flutterNotifications.show(
+        0, "Task", "You created a Task", 
+        notificationDetails, payload: "Task");
+ }
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  var androidLocalNotificationInitSettings = new AndroidInitializationSettings("ic_launcher_foreground");
+  var localNotificationInitSettings = new InitializationSettings(android: androidLocalNotificationInitSettings);
+  await flutterNotifications.initialize(localNotificationInitSettings);
+
+  await _showNotification();
 
   // TODO: Find a way to put this in the constructor
   await TaskProvider().initdb(".");
   await AndroidAlarmManager.initialize();
-
-  print(await TaskProvider().tasks());
 
   AwesomeNotifications().initialize(
     // set the icon to null if you want to use the default app icon
@@ -101,18 +116,6 @@ void main() async {
   );
 
   runApp(MyApp());
-
-  // if (Platform.isAndroid) {
-  //   await AndroidAlarmManager.periodic(
-  //     const Duration(hours: 24), //Do the same every 24 hours
-  //     0, //Different ID for each alarm
-  //     _reminderNotification,
-  //     wakeup: false, //the device will be woken up when the alarm fires
-  //     startAt: DateTime(DateTime.now().year, DateTime.now().month,
-  //         DateTime.now().day, 08, 00), //Start whit the specific time 5:00 am
-  //     rescheduleOnReboot: true, //Work after reboot
-  //   );
-  // }
 }
 
 class MyApp extends StatelessWidget {
