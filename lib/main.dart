@@ -119,8 +119,7 @@ class MyApp extends StatelessWidget {
   MyApp({Key? key}) : super(key: key);
 
   final ThemeData lightMode = ThemeData(
-    brightness: Brightness.light,
-    accentColor: Colors.yellow[800],
+    colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.yellow[800], brightness: Brightness.light),
     backgroundColor: Colors.white,
     indicatorColor: Colors.black12,
     textTheme: TextTheme(
@@ -150,8 +149,7 @@ class MyApp extends StatelessWidget {
   );
 
   final ThemeData darkMode = ThemeData(
-    brightness: Brightness.dark,
-    accentColor: Colors.yellow[700],
+    colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.yellow[700], brightness: Brightness.dark),
     indicatorColor: Colors.black26,
     backgroundColor: Colors.grey[900],
     textTheme: TextTheme(
@@ -299,7 +297,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         color: Theme.of(context).backgroundColor,
                       ),
                       selectedDecoration: BoxDecoration(
-                        color: Theme.of(context).accentColor,
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                       todayDecoration: BoxDecoration(
                         color: Theme.of(context).indicatorColor,

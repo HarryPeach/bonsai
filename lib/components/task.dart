@@ -90,7 +90,7 @@ class _TaskState extends State<Task> {
                   if (widget.tm.important) {
                     return Icon(
                       Icons.circle,
-                      color: Theme.of(context).accentColor,
+                      color: Theme.of(context).colorScheme.secondary,
                       size: 10.0,
                     );
                   } else {
