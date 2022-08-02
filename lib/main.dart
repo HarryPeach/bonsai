@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -9,7 +7,7 @@ import 'package:bonsai/components/new_task_card.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:bonsai/components/task_list.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:android_alarm_manager/android_alarm_manager.dart';
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 
 /// Creates and pushes the reminder notification
@@ -104,17 +102,17 @@ void main() async {
 
   runApp(MyApp());
 
-  if (Platform.isAndroid) {
-    await AndroidAlarmManager.periodic(
-      const Duration(hours: 24), //Do the same every 24 hours
-      0, //Different ID for each alarm
-      _reminderNotification,
-      wakeup: false, //the device will be woken up when the alarm fires
-      startAt: DateTime(DateTime.now().year, DateTime.now().month,
-          DateTime.now().day, 08, 00), //Start whit the specific time 5:00 am
-      rescheduleOnReboot: true, //Work after reboot
-    );
-  }
+  // if (Platform.isAndroid) {
+  //   await AndroidAlarmManager.periodic(
+  //     const Duration(hours: 24), //Do the same every 24 hours
+  //     0, //Different ID for each alarm
+  //     _reminderNotification,
+  //     wakeup: false, //the device will be woken up when the alarm fires
+  //     startAt: DateTime(DateTime.now().year, DateTime.now().month,
+  //         DateTime.now().day, 08, 00), //Start whit the specific time 5:00 am
+  //     rescheduleOnReboot: true, //Work after reboot
+  //   );
+  // }
 }
 
 class MyApp extends StatelessWidget {
