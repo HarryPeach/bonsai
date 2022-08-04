@@ -1,9 +1,11 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:bonsai/components/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:intl/intl.dart';
 import 'package:bonsai/model/task_model.dart';
 import 'package:bonsai/model/task_provider.dart';
@@ -78,6 +80,7 @@ void main() async {
   // TODO: Find a way to put this in the constructor
   await TaskProvider().initdb(".");
   await AndroidAlarmManager.initialize();
+  await Settings.init();
 
   // TODO: Add warning for app killing
   if (Platform.isAndroid) {
@@ -231,7 +234,10 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text("TODO: Implement settings screen")));
-              _showNotification();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
             },
           ),
           IconButton(
