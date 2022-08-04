@@ -1,5 +1,9 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:bonsai/model/task_model.dart';
 import 'package:bonsai/model/task_provider.dart';
@@ -8,10 +12,20 @@ import 'package:dart_date/dart_date.dart';
 import 'package:bonsai/components/task_list.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+
+final FlutterLocalNotificationsPlugin flutterNotifications =
+    FlutterLocalNotificationsPlugin();
 
 /// Creates and pushes the reminder notification
-void _reminderNotification() async {
+Future _showNotification() async {
+  log("Showing notification");
+  var androidNotificationDetails =
+      new AndroidNotificationDetails("reminder_channel", "Daily Reminders", styleInformation: BigTextStyleInformation('', htmlFormatContent: true));
+  var notificationDetails =
+      new NotificationDetails(android: androidNotificationDetails);
+
   DateFormat dateFormatter = DateFormat("y/M/d");
   int importantTasks = 0;
   int dueToday = 0;
@@ -31,95 +45,62 @@ void _reminderNotification() async {
   );
 
   if (backlogTasks == 0) {
-    AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: 10,
-        channelKey: 'reminder_channel',
-        title: Emojis.activites_party_popper + ' You have no tasks today!',
-        summary: "Daily Task reminder",
-        body: '''
-      Why not add some to the backlog?
-      ''',
-        notificationLayout: NotificationLayout.BigText,
-      ),
-    );
+    await flutterNotifications.show(
+      10, "🎉 You have no tasks today!", "Why not add some to the backlog?", notificationDetails,
+      payload: "Task");
     return;
   }
 
   if (dueToday == 0 && backlogTasks > 0) {
-    AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: 10,
-        channelKey: 'reminder_channel',
-        title: Emojis.activites_party_popper + ' You have no tasks due today!',
-        summary: "Daily Task reminder",
-        body: '''
-      There are still ${Emojis.mail_inbox_tray} <b>$backlogTasks</b> total tasks in the backlog, ${Emojis.icon_anger_symbol} <b>$importantTasks</b> of which are important.
-      ''',
-        notificationLayout: NotificationLayout.BigText,
-      ),
-    );
+    await flutterNotifications.show(
+      10, "🎉 You have no tasks due today!", '''There are still 📥 <b>$backlogTasks</b> total tasks in the backlog, 💢 <b>$importantTasks</b> of which are important.''', notificationDetails,
+      payload: "Task");
     return;
   }
 
-  AwesomeNotifications().createNotification(
-    content: NotificationContent(
-      id: 10,
-      channelKey: 'reminder_channel',
-      title: Emojis.activites_ticket +
-          ' You have <b>$dueToday</b> tasks due today',
-      summary: "Daily Task reminder",
-      body: '''
-      ${Emojis.mail_inbox_tray} <b>$backlogTasks</b> total tasks in the backlog, ${Emojis.icon_anger_symbol} <b>$importantTasks</b> of which are important.
-      ''',
-      notificationLayout: NotificationLayout.BigText,
-    ),
-  );
+  await flutterNotifications.show(
+      10, "🎉 You have no tasks due today!", 
+      '''📥 <b>$backlogTasks</b> total tasks in the backlog, 💢 <b>$importantTasks</b> of which are important.''',
+      notificationDetails,
+      payload: "Task");
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  var androidLocalNotificationInitSettings =
+      new AndroidInitializationSettings("ic_launcher_foreground");
+  var localNotificationInitSettings =
+      new InitializationSettings(android: androidLocalNotificationInitSettings);
+  await flutterNotifications.initialize(localNotificationInitSettings);
+
+  tz.initializeTimeZones();
 
   // TODO: Find a way to put this in the constructor
   await TaskProvider().initdb(".");
   await AndroidAlarmManager.initialize();
 
-  print(await TaskProvider().tasks());
-
-  AwesomeNotifications().initialize(
-    // set the icon to null if you want to use the default app icon
-    'resource://drawable/ic_launcher_foreground',
-    [
-      NotificationChannel(
-        channelKey: 'reminder_channel',
-        channelName: 'Reminder notifications',
-        channelDescription: 'Notification channel for daily reminders',
-        defaultColor: Color(0xFF9D50DD),
-        ledColor: Colors.white,
-      ),
-    ],
-  );
+  // TODO: Add warning for app killing
+  if (Platform.isAndroid) {
+   log("Alarm Manager set for: " + DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 9, 0).toHumanString());
+   await AndroidAlarmManager.periodic(
+      const Duration(hours: 24),
+      101, //Different ID for each alarm
+      _showNotification,
+      wakeup: true,
+      startAt: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 8, 0), //Start with the specific time 9:00 am
+      rescheduleOnReboot: true,
+   );
+}
 
   runApp(MyApp());
-
-  // if (Platform.isAndroid) {
-  //   await AndroidAlarmManager.periodic(
-  //     const Duration(hours: 24), //Do the same every 24 hours
-  //     0, //Different ID for each alarm
-  //     _reminderNotification,
-  //     wakeup: false, //the device will be woken up when the alarm fires
-  //     startAt: DateTime(DateTime.now().year, DateTime.now().month,
-  //         DateTime.now().day, 08, 00), //Start whit the specific time 5:00 am
-  //     rescheduleOnReboot: true, //Work after reboot
-  //   );
-  // }
 }
 
 class MyApp extends StatelessWidget {
   MyApp({Key? key}) : super(key: key);
 
   final ThemeData lightMode = ThemeData(
-    colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.yellow[800], brightness: Brightness.light),
+    colorScheme: ColorScheme.fromSwatch()
+        .copyWith(secondary: Colors.yellow[800], brightness: Brightness.light),
     backgroundColor: Colors.white,
     indicatorColor: Colors.black12,
     textTheme: TextTheme(
@@ -149,7 +130,8 @@ class MyApp extends StatelessWidget {
   );
 
   final ThemeData darkMode = ThemeData(
-    colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.yellow[700], brightness: Brightness.dark),
+    colorScheme: ColorScheme.fromSwatch()
+        .copyWith(secondary: Colors.yellow[700], brightness: Brightness.dark),
     indicatorColor: Colors.black26,
     backgroundColor: Colors.grey[900],
     textTheme: TextTheme(
@@ -215,16 +197,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
-    AwesomeNotifications().isNotificationAllowed().then(
-      (isAllowed) {
-        if (!isAllowed) {
-          // Insert here your friendly dialog box before call the request method
-          // This is very important to not harm the user experience
-          AwesomeNotifications().requestPermissionToSendNotifications();
-        }
-      },
-    );
-
     if (todaysTasks == null ||
         soonTasks == null ||
         completedTodayTasks == null) {
@@ -259,7 +231,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text("TODO: Implement settings screen")));
-              _reminderNotification();
+              _showNotification();
             },
           ),
           IconButton(
