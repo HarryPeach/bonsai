@@ -1,3 +1,6 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -9,12 +12,15 @@ import 'package:dart_date/dart_date.dart';
 import 'package:bonsai/components/task_list.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 final FlutterLocalNotificationsPlugin flutterNotifications =
     FlutterLocalNotificationsPlugin();
 
 /// Creates and pushes the reminder notification
 Future _showNotification() async {
+  log("Showing notification");
   var androidNotificationDetails =
       new AndroidNotificationDetails("reminder_channel", "Daily Reminders", styleInformation: BigTextStyleInformation('', htmlFormatContent: true));
   var notificationDetails =
@@ -67,10 +73,24 @@ void main() async {
       new InitializationSettings(android: androidLocalNotificationInitSettings);
   await flutterNotifications.initialize(localNotificationInitSettings);
 
+  tz.initializeTimeZones();
 
   // TODO: Find a way to put this in the constructor
   await TaskProvider().initdb(".");
   await AndroidAlarmManager.initialize();
+
+  // TODO: Add warning for app killing
+  if (Platform.isAndroid) {
+   log("Alarm Manager set for: " + DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 9, 0).toHumanString());
+   await AndroidAlarmManager.periodic(
+      const Duration(hours: 24),
+      101, //Different ID for each alarm
+      _showNotification,
+      wakeup: true,
+      startAt: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 8, 0), //Start with the specific time 9:00 am
+      rescheduleOnReboot: true,
+   );
+}
 
   runApp(MyApp());
 }
