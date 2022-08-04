@@ -35,7 +35,7 @@ class _TaskState extends State<Task> {
     String inDays = getTaskDays();
 
     return InkWell(
-      onLongPress: () {
+      onTap: () {
         _showViewTaskSheet(widget.tm);
       },
       child: Row(

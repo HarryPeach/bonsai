@@ -23,8 +23,9 @@ final FlutterLocalNotificationsPlugin flutterNotifications =
 /// Creates and pushes the reminder notification
 Future _showNotification() async {
   log("Showing notification");
-  var androidNotificationDetails =
-      new AndroidNotificationDetails("reminder_channel", "Daily Reminders", styleInformation: BigTextStyleInformation('', htmlFormatContent: true));
+  var androidNotificationDetails = new AndroidNotificationDetails(
+      "reminder_channel", "Daily Reminders",
+      styleInformation: BigTextStyleInformation('', htmlFormatContent: true));
   var notificationDetails =
       new NotificationDetails(android: androidNotificationDetails);
 
@@ -47,21 +48,25 @@ Future _showNotification() async {
   );
 
   if (backlogTasks == 0) {
-    await flutterNotifications.show(
-      10, "🎉 You have no tasks today!", "Why not add some to the backlog?", notificationDetails,
-      payload: "Task");
+    await flutterNotifications.show(10, "🎉 You have no tasks today!",
+        "Why not add some to the backlog?", notificationDetails,
+        payload: "Task");
     return;
   }
 
   if (dueToday == 0 && backlogTasks > 0) {
     await flutterNotifications.show(
-      10, "🎉 You have no tasks due today!", '''There are still 📥 <b>$backlogTasks</b> total tasks in the backlog, 💢 <b>$importantTasks</b> of which are important.''', notificationDetails,
-      payload: "Task");
+        10,
+        "🎉 You have no tasks due today!",
+        '''There are still 📥 <b>$backlogTasks</b> total tasks in the backlog, 💢 <b>$importantTasks</b> of which are important.''',
+        notificationDetails,
+        payload: "Task");
     return;
   }
 
   await flutterNotifications.show(
-      10, "🎉 You have no tasks due today!", 
+      10,
+      "🎉 You have no tasks due today!",
       '''📥 <b>$backlogTasks</b> total tasks in the backlog, 💢 <b>$importantTasks</b> of which are important.''',
       notificationDetails,
       payload: "Task");
@@ -84,16 +89,20 @@ void main() async {
 
   // TODO: Add warning for app killing
   if (Platform.isAndroid) {
-   log("Alarm Manager set for: " + DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 9, 0).toHumanString());
-   await AndroidAlarmManager.periodic(
+    log("Alarm Manager set for: " +
+        DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day,
+                9, 0)
+            .toHumanString());
+    await AndroidAlarmManager.periodic(
       const Duration(hours: 24),
       101, //Different ID for each alarm
       _showNotification,
       wakeup: true,
-      startAt: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 8, 0), //Start with the specific time 9:00 am
+      startAt: DateTime(DateTime.now().year, DateTime.now().month,
+          DateTime.now().day, 8, 0), //Start with the specific time 9:00 am
       rescheduleOnReboot: true,
-   );
-}
+    );
+  }
 
   runApp(MyApp());
 }
@@ -168,7 +177,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'bonsai',
-      theme: darkMode,
+      theme: Settings.getValue<bool>("key-dark-mode", defaultValue: false)!
+          ? darkMode
+          : lightMode,
       home: MyHomePage(),
     );
   }
@@ -232,8 +243,6 @@ class _MyHomePageState extends State<MyHomePage> {
             iconSize: 24.0,
             color: Theme.of(context).iconTheme.color,
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("TODO: Implement settings screen")));
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const SettingsPage()),
@@ -247,6 +256,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text("TODO: Implement archive screen")));
+              _showNotification();
             },
           ),
           IconButton(

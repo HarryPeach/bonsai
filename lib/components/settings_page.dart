@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -10,7 +13,8 @@ class SettingsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Theme.of(context).textTheme.headline1?.color),
+        iconTheme:
+            IconThemeData(color: Theme.of(context).textTheme.headline1?.color),
         toolbarHeight: 80.0,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
@@ -28,12 +32,23 @@ class SettingsPage extends StatelessWidget {
         ),
       ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            // Navigate back to first route when tapped.
-          },
-          child: const Text('Go back!'),
-        ),
+        child: Column(children: [
+          SettingsGroup(
+            title: 'Appearance',
+            children: <Widget>[
+              SwitchSettingsTile(
+                onChange: (_) {
+                  // log("test");
+                },
+                settingKey: 'key-dark-mode',
+                title: 'Dark Mode',
+                enabledLabel: 'Enabled',
+                disabledLabel: 'Disabled',
+                leading: Icon(Icons.palette),
+              ),
+            ],
+          )
+        ]),
       ),
     );
   }
