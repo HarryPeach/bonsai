@@ -138,6 +138,9 @@ class MyApp extends StatelessWidget {
       bodyText1: TextStyle(
         color: Colors.black87,
       ),
+      overline: TextStyle(
+        color: Colors.black45,
+      ),
     ),
   );
 
@@ -168,6 +171,9 @@ class MyApp extends StatelessWidget {
       ),
       bodyText1: TextStyle(
         color: Colors.white,
+      ),
+      overline: TextStyle(
+        color: Colors.white54,
       ),
     ),
     iconTheme: IconThemeData(color: Colors.white),

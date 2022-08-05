@@ -15,7 +15,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 0.1.0+1
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -35,6 +35,7 @@ dependencies:
   android_alarm_manager_plus : ^2.0.6
   flutter_local_notifications: ^9.7.0
   flutter_settings_screens: ^0.3.3-null-safety+2
+  package_info_plus: ^1.4.3
 
 dev_dependencies:
   flutter_launcher_icons: ^0.9.0
@@ -61,7 +62,9 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/think_hearts.png
-  #   - images/a_dot_ham.jpeg
+    - .git/HEAD         # This file points out the current branch of the project.
+    - .git/ORIG_HEAD    # This file points to the commit id at origin (last commit id of the remote repository).
+    - .git/refs/heads/  # This directory includes files for each branch which points to the last commit id (local repo).
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
