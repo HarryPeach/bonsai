@@ -1,3 +1,4 @@
+import 'package:bonsai/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
@@ -11,7 +12,7 @@ Future<String> getGitInfo() async {
 
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
-  return "app version:${packageInfo.version}+${packageInfo.buildNumber}\ngit branch: $branch\ngit commit: ${commitId.substring(0, 12)}";
+  return "app version: ${packageInfo.version}+${packageInfo.buildNumber}\nbranch: $branch\ncommit: ${commitId.substring(0, 12)}";
 }
 
 class SettingsPage extends StatelessWidget {
@@ -47,7 +48,16 @@ class SettingsPage extends StatelessWidget {
             children: <Widget>[
               SwitchSettingsTile(
                 onChange: (_) {
-                  // log("test");
+                  var snackBar = SnackBar(
+                    content:
+                        Text("You must refresh the app to apply this change"),
+                    action: SnackBarAction(
+                      label: "Refresh",
+                      onPressed: () => refreshColorScheme(context),
+                    ),
+                  );
+
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 },
                 settingKey: 'key-dark-mode',
                 title: 'Dark Mode',

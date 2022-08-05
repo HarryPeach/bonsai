@@ -5,6 +5,7 @@ import 'package:bonsai/components/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:intl/intl.dart';
 import 'package:bonsai/model/task_model.dart';
@@ -104,7 +105,18 @@ void main() async {
     );
   }
 
-  runApp(MyApp());
+  runApp(Phoenix(child: MyApp()));
+}
+
+void refreshColorScheme(BuildContext context) {
+  Phoenix.rebirth(context);
+
+  // Fix the notification icons being invisible in light mode
+  if (Settings.getValue<bool>("key-dark-mode", defaultValue: false)!) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+  } else {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+  }
 }
 
 class MyApp extends StatelessWidget {
